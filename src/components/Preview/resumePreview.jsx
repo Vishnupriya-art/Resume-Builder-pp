@@ -1,37 +1,32 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import html2pdf from "html2pdf.js";
 import { useResume } from "../../Context/resumeContext";
 
 const ResumePreview = () => {
-  const { resumeData, setStep } = useResume();
-  const resumeRef = useRef(); 
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  
-  const handleSubmit = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-    }, 2000);
-  };
+  const { resumeData } = useResume();
+  const resumeRef = useRef();
 
   const downloadPDF = () => {
     const element = resumeRef.current;
+
     const options = {
-      margin: 0.5,
+      margin: 0,
       filename: "Resume.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      image: { type: "jpeg", quality: 1 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: {
+        unit: "px",
+        format: [794, 1123],
+        orientation: "portrait",
+      },
     };
+
     html2pdf().set(options).from(element).save();
   };
 
   return (
-    <div className="p-4">
-
+    <div className="p-4 bg-gray-100 min-h-screen">
+      {/* Download Button */}
       <div className="flex justify-end mb-4">
         <button
           onClick={downloadPDF}
@@ -41,91 +36,121 @@ const ResumePreview = () => {
         </button>
       </div>
 
-  
-      <div
-        ref={resumeRef}
-        className="space-y-6 bg-white p-6 shadow-md max-w-3xl mx-auto"
-      >
-        <h2 className="text-2xl font-bold text-center">Resume Preview</h2>
-
-       
-        <div className="border p-4 rounded">
-          <div className="flex justify-between">
-            <h3 className="font-semibold">Personal Info</h3>
-            <button onClick={() => setStep(1)} className="text-blue-500">
-              Edit
-            </button>
-          </div>
-          <p>{resumeData.personalInfo.firstName} {resumeData.personalInfo.lastName}</p>
-          <p>{resumeData.personalInfo.email}</p>
-          <p>{resumeData.personalInfo.phone}</p>
-        </div>
-
-        
-        <div className="border p-4 rounded">
-          <div className="flex justify-between">
-            <h3 className="font-semibold">Summary</h3>
-            <button onClick={() => setStep(2)} className="text-blue-500">
-              Edit
-            </button>
-          </div>
-          <p>{resumeData.summary}</p>
-        </div>
-
-
-        <div className="border p-4 rounded">
-          <div className="flex justify-between">
-            <h3 className="font-semibold">Skills</h3>
-            <button onClick={() => setStep(5)} className="text-blue-500">
-              Edit
-            </button>
-          </div>
-          {resumeData.skills?.map((skill, i) => (
-            <p key={i}>{skill.name} - {skill.level}</p>
-          ))}
-        </div>
-
-
-        <div className="border p-4 rounded">
-          <div className="flex justify-between">
-            <h3 className="font-semibold">Projects</h3>
-            <button onClick={() => setStep(6)} className="text-blue-500">
-              Edit
-            </button>
-          </div>
-          {resumeData.projects?.map((p, i) => (
-            <div key={i}>
-              <p className="font-medium">{p.title}</p>
-              <p>{p.description}</p>
-            </div>
-          ))}
-        </div>
-
-       
-        <div className="border p-4 rounded">
-          <div className="flex justify-between">
-            <h3 className="font-semibold">Certifications</h3>
-            <button onClick={() => setStep(7)} className="text-blue-500">
-              Edit
-            </button>
-          </div>
-          {resumeData.certifications?.map((c, i) => (
-            <p key={i}>{c.name} - {c.organization} ({c.year})</p>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+      <div className="flex justify-center">
+        <div
+          ref={resumeRef}
+          className="bg-white w-[794px] min-h-[1123px] p-10 text-gray-800"
         >
-          Submit
-        </button>
-      </div>
+          {/* PERSONAL INFO */}
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold uppercase">
+              {resumeData?.personalInfo?.firstName || "First"}{" "}
+              {resumeData?.personalInfo?.lastName || "Last"}
+            </h1>
+            <p className="text-sm">
+              {resumeData?.personalInfo?.email || "email@email.com"} |{" "}
+              {resumeData?.personalInfo?.phone || "0000000000"}
+            </p>
+            <p className="text-sm">
+              {resumeData?.personalInfo?.location || "Location"}
+            </p>
+          </div>
 
-      {loading && <div className="text-blue-500 font-medium">Saving resume...</div>}
-      {success && <div className="text-green-600 font-medium">Resume submitted successfully!</div>}
+          {/* SUMMARY */}
+          <div className="mb-6">
+            <h2 className="font-bold border-b mb-2">
+              Professional Summary
+            </h2>
+            <p>{resumeData?.summary || "Add summary"}</p>
+          </div>
+
+          {/* EDUCATION */}
+          {/* EDUCATION */}
+<div className="mb-8">
+  <h2 className="text-lg font-bold text-blue-700 border-b-2 border-blue-700 pb-1 mb-2">
+    Education
+  </h2>
+
+  {resumeData.education?.map((edu, i) => (
+    <div key={i} className="mb-3">
+      <p className="font-semibold">{edu.degree}</p>
+
+      <p className="text-sm">
+        {edu.institution}{" "}
+        {edu.startYear && edu.endYear
+          ? `(${edu.startYear} - ${edu.endYear})`
+          : ""}
+      </p>
+    </div>
+  ))}
+</div>
+          {/* EXPERIENCE */}
+         {/* EXPERIENCE */}
+<div className="mb-8">
+  <h2 className="text-lg font-bold text-blue-700 border-b-2 border-blue-700 pb-1 mb-2">
+    Experience
+  </h2>
+
+  {resumeData.experience?.map((exp, i) => (
+    <div key={i} className="mb-3">
+      <p className="font-semibold">
+        {exp.company}
+        {exp.startYear && exp.endYear
+          ? ` (${exp.startYear} - ${exp.endYear})`
+          : ""}
+      </p>
+
+      <p className="text-sm">{exp.role}</p>
+      <p className="text-sm mt-1">{exp.description}</p>
+    </div>
+  ))}
+</div>
+          {/* SKILLS */}
+          <div className="mb-6">
+            <h2 className="font-bold border-b mb-2">Skills</h2>
+            {resumeData?.skills?.length > 0 ? (
+              <ul className="grid grid-cols-2 gap-2">
+                {resumeData.skills.map((skill, i) => (
+                  <li key={i}>• {skill.name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No skills added</p>
+            )}
+          </div>
+
+          {/* PROJECTS */}
+          <div className="mb-6">
+            <h2 className="font-bold border-b mb-2">Projects</h2>
+            {resumeData?.projects?.length > 0 ? (
+              resumeData.projects.map((p, i) => (
+                <div key={i} className="mb-2">
+                  <p className="font-semibold">{p.title}</p>
+                  <p className="text-sm">{p.description}</p>
+                </div>
+              ))
+            ) : (
+              <p>No projects added</p>
+            )}
+          </div>
+
+          {/* CERTIFICATIONS */}
+          <div>
+            <h2 className="font-bold border-b mb-2">
+              Certifications
+            </h2>
+            {resumeData?.certifications?.length > 0 ? (
+              resumeData.certifications.map((c, i) => (
+                <p key={i} className="text-sm">
+                  {c.name} - {c.organization} ({c.year})
+                </p>
+              ))
+            ) : (
+              <p>No certifications added</p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -5,37 +5,46 @@ import ProjectCard from "./ProjectCard";
 const ProjectsForm = () => {
   const { resumeData, updateData, setStep } = useResume();
 
-  const [project, setProject] = useState({
-    title: "",
-    description: "",
-    techStack: "",
-    url: ""
-  });
+  
+  const [project, setProject] = useState(
+    resumeData.projects && resumeData.projects.length > 0
+      ? resumeData.projects
+      : [
+          {
+            title: "",
+            description: "",
+            techStack: "",
+            url: ""
+          }
+        ]
+  );
 
+  
   const projects = resumeData.projects || [];
 
-  const handleChange = (e) => {
-    setProject({
-      ...project,
-      [e.target.name]: e.target.value
-    });
-  };
+  
+    const handleChange = (index, e) => {
+  const updatedProjects = [...project];
+  updatedProjects[index][e.target.name] = e.target.value;
+  setProject(updatedProjects);
+};
 
+ 
   const addProject = () => {
-    if (!project.title) return;
-
-    const updatedProjects = [...projects, project];
-    updateData("projects", updatedProjects);
-
-    setProject({
-      title: "",
-      description: "",
-      techStack: "",
-      url: ""
-    });
+    setProject([
+      ...project,
+      {
+        title: "",
+        description: "",
+        techStack: "",
+        url: ""
+      }
+    ]);
   };
 
+ 
   const handleNext = () => {
+    updateData("projects", project);
     setStep(7);
   };
 
@@ -47,38 +56,44 @@ const ProjectsForm = () => {
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Projects</h2>
 
-      <input
-        name="title"
-        placeholder="Project Title"
-        value={project.title}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
+     
+      {project.map((proj, index) => (
+        <div key={index} className="space-y-2 border p-3 rounded">
+          <input
+            name="title"
+            placeholder="Project Title"
+            value={proj.title}
+            onChange={(e) => handleChange(index, e)}
+            className="w-full border p-2 rounded"
+          />
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={project.description}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={proj.description}
+            onChange={(e) => handleChange(index, e)}
+            className="w-full border p-2 rounded"
+          />
 
-      <input
-        name="techStack"
-        placeholder="Tech Stack"
-        value={project.techStack}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
+          <input
+            name="techStack"
+            placeholder="Tech Stack"
+            value={proj.techStack}
+            onChange={(e) => handleChange(index, e)}
+            className="w-full border p-2 rounded"
+          />
 
-      <input
-        name="url"
-        placeholder="Project URL"
-        value={project.url}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
+          <input
+            name="url"
+            placeholder="Project URL"
+            value={proj.url}
+            onChange={(e) => handleChange(index, e)}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+      ))}
 
+      {/* Add project button */}
       <button
         onClick={addProject}
         className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -86,12 +101,13 @@ const ProjectsForm = () => {
         Add Project
       </button>
 
-      {/* Project List */}
+      {/* Display all saved projects using ProjectCard */}
       {projects.map((p, index) => (
         <ProjectCard key={index} project={p} />
       ))}
 
-      <div className="flex justify-between">
+      {/* Navigation buttons */}
+      <div className="flex justify-between mt-4">
         <button
           onClick={handleBack}
           className="bg-gray-400 text-white px-4 py-2 rounded"

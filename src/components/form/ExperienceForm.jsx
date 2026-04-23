@@ -65,7 +65,7 @@ const ExperienceForm = () => {
             <div>
               <input
                 className="w-full border p-2 rounded"
-                placeholder="Job Title"
+                placeholder="Job Title" 
                 {...register(`experience.${index}.jobTitle`, {
                   required: "Job title required"
                 })}
